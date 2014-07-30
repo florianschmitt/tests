@@ -1363,6 +1363,37 @@ public class JPQLQueryTest extends JPAPersistenceTestCase
             clean(Timer.class);
         }
     }
+	
+    /**
+     * Test for multiple joins finishing at the candidate again
+     */
+    public void testMultipleJoinsAndFieldAccess()
+    {
+        try
+        {
+            EntityManager em = getEM();
+            EntityTransaction tx = em.getTransaction();
+            try
+            {
+                tx.begin();
+                String query = "Select d From Department d Join d.projects p Join d.manager m";
+                em.createQuery(query).getResultList();
+            }
+            finally
+            {
+                if (tx.isActive())
+                {
+                    tx.rollback();
+                }
+                em.close();
+            }
+        }
+        finally
+        {
+            clean(Boiler.class);
+            clean(Timer.class);
+        }
+    }
 
     /**
      * Test projection of N-1 field.
